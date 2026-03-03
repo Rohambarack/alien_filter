@@ -93,8 +93,9 @@ class Player_Base:
         max_p_r_idx = self.current_rules["p"].index(
             max(self.current_rules["p"])
             )
+        self.max_p = self.current_rules[max_p_r_idx]["p"]
         self.max_p_rule = self.current_rules[max_p_r_idx]["rule"]
-        self.guess_correct = self.current_rules[max_p_r_idx]["passed_stim"]
+        self.guess = self.current_rules[max_p_r_idx]["passed_stim"]
 
     #resample based on feedback
     def instant_resample(self,correct_c):
