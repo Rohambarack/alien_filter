@@ -8,7 +8,7 @@ class Player_Base:
     def __init__(self, all_rules_ds:Dataset, memory:int=5):
         self.memory = memory
         self.all_rules = all_rules_ds
-        self.current_rules = []
+        self.current_rules = Dataset.from_list([])
         #keeps track of rules removed, mostly for diagnostic reasons
         self.removed_rules = []
 
@@ -22,9 +22,12 @@ class Player_Base:
         n_rules = self.memory - len(self.current_rules)
         s1 = random.sample(range(len(self.all_rules)),n_rules)
 
-        self.current_rules = Dataset.from_dict(self.all_rules[s1])
+        temp_rules = Dataset.from_dict(self.all_rules[s1])
 
-        self.all_rules = self.all_rules.filter(lambda ds:ds["rule"] not in self.current_rules["rule"])
+        self.all_rules = self.all_rules.filter(lambda ds:ds["rule"] not in temp_rules)
+
+        self.current_rules = concatenate_datasets([self.current_rules,temp_rules])
+
 
     #probability updater
     def proportional_p_update(self):
@@ -118,9 +121,6 @@ class Player_Base:
         
         #refill memory
         if len(self.current_rules) < self.memory:
-            self.temp_rules = self.random_sampler_remove(self)
-
-            self.current_rules = concatenate_datasets(
-                [self.temp_rules,self.current_rules])
+            self.random_sampler_remove()
         else:
             pass
